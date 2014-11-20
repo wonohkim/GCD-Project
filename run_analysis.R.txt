@@ -1,16 +1,11 @@
-
-
-activity_labels <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/activity_labels.txt", quote="\"")
-features <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/features.txt", quote="\"")
-subject_test <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/test/subject_test.txt", quote="\"")
-X_test <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/test/X_test.txt", quote="\"")
-y_test <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/test/y_test.txt", quote="\"")
-subject_train <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/train/subject_train.txt", quote="\"")
-X_train <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/train/X_train.txt", quote="\"")
-y_train <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/train/y_train.txt", quote="\"")
-
-
-
+activity_labels <- read.table("UCI HAR Dataset/activity_labels.txt", quote="\"")
+features <- read.table("UCI HAR Dataset/features.txt", quote="\"")
+subject_test <- read.table("UCI HAR Dataset/test/subject_test.txt", quote="\"")
+X_test <- read.table("UCI HAR Dataset/test/X_test.txt", quote="\"")
+y_test <- read.table("UCI HAR Dataset/test/y_test.txt", quote="\"")
+subject_train <- read.table("UCI HAR Dataset/train/subject_train.txt", quote="\"")
+X_train <- read.table("UCI HAR Dataset/train/X_train.txt", quote="\"")
+y_train <- read.table("UCI HAR Dataset/train/y_train.txt", quote="\"")
 testdf <- cbind(subject_test, y_test, X_test)
 traindf <- cbind(subject_train, y_train, X_train)
 completedf <- rbind(testdf, traindf)
@@ -28,3 +23,4 @@ completedf3 <- data.frame(activity_labels$V2,
 (colMeans(completedf2[which(completedf2$activity == "SITTING"), 3:81])), 
 (colMeans(completedf2[which(completedf2$activity == "STANDING"), 3:81])), 
 (colMeans(completedf2[which(completedf2$activity == "LAYING"), 3:81])))))
+print(completedf3)
