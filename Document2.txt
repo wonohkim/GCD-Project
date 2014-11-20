@@ -1,0 +1,73 @@
+##Download the UCI HAR Dataset and move the folder to your working directory
+##Load all of the necessary files into R
+##My working directory is "~/Emekas Documents/R-Directory/" so you should replace that part of the code with your working directory. The rest should be consistent
+##If you are using R Studio, then you can just use the "Import Dataset" option in the enviroment section
+
+
+activity_labels <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/activity_labels.txt", quote="\"")
+features <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/features.txt", quote="\"")
+subject_test <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/test/subject_test.txt", quote="\"")
+X_test <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/test/X_test.txt", quote="\"")
+y_test <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/test/y_test.txt", quote="\"")
+subject_train <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/train/subject_train.txt", quote="\"")
+X_train <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/train/X_train.txt", quote="\"")
+y_train <- read.table("~/Emekas Documents/R-Directory/UCI HAR Dataset/train/y_train.txt", quote="\"")
+-----
+
+##All the files are now loaded into R. Now it's time to construct the initial data frame
+
+##Use cbind to construct the data frame of test data
+testdf <- cbind(subject_test, y_test, X_test)
+
+##Use cbind to construct the data frame for train data
+traindf <- cbind(subject_train, y_train, X_train)
+
+##Use rbind to combine the two data frames into one large data frame
+completedf <- rbind(testdf, traindf)
+-----
+
+##Now you should have a full data frame
+##Next step is to fill in the variable names
+
+##First convert the activities in the features data frame to a name variable
+names <- make.names(features$V2, unique = TRUE)
+
+##Now change the first column to "subject", the second column to "activity", and the rest will be filled with the new names variable will fill the rest
+##"subject" and "activity" are just used to make more sense of the first two columns
+colnames(completedf) <- c("subject", "activity", names)
+-----
+##Now fix the activity column so that the numbers are replaced with the activity labels
+
+##First change the column class from numeric to factor
+completedf$activity <- as.factor(completedf$activity)
+
+##Now replace the levels with the levels from the activity column (replacing numbers with their appropriate labels)
+levels(completedf$activity) <- levels(activity_labels$V2)
+-----
+##Now subest the columns of the data frame to only columns regarding mean and standard deviation. Use the grep function
+
+##Make a list of all the column numbers that have the word "mean"
+means <- grep("mean", colnames(completedf))
+
+##Make a list of all the column names that have the word "std"
+sds <- grep("std", colnames(completedf))
+
+##Make a new data frame with the subject column, activity column, and columns relating to mean and std
+completedf2 <- completedf[,c(1:2, means,sds)]
+-----
+##Now make a new data frame with the coumn averages by activity
+##This piece of code is very long and looks awkward when copied and pasted into R, but it will work just fine
+##The code makes a data frame with the first column being the activity labels. 
+##The next column is actually a matrix made up of an rbind of column means by activity
+##Each row of coumn means uses the colMeans function and subsets the completeddf2 by rows featuring the activity name
+
+completedf3 <- data.frame(activity_labels$V2, 
+(rbind((colMeans(completedf2[which(completedf2$activity == "WALKING"), 3:81])), 
+(colMeans(completedf2[which(completedf2$activity == "WALKING_UPSTAIRS"), 3:81])), 
+(colMeans(completedf2[which(completedf2$activity == "WALKING_DOWNSTAIRS"), 3:81])), 
+(colMeans(completedf2[which(completedf2$activity == "SITTING"), 3:81])), 
+(colMeans(completedf2[which(completedf2$activity == "STANDING"), 3:81])), 
+(colMeans(completedf2[which(completedf2$activity == "LAYING"), 3:81])))))
+---
+
+##You should now have your final data frame
